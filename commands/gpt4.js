@@ -5,7 +5,7 @@ module.exports = {
   name: 'gpt4',
   description: 'Interact with GPT-4o',
   usage: 'gpt4 [your message]',
-  author: 'Raniel',
+  author: 'GeoDevz69',
   
 
   async execute(senderId, args, pageAccessToken) {
