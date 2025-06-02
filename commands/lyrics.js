@@ -1,5 +1,5 @@
 const { sendMessage } = require('../handles/sendMessage');
-const { find } = require('llyrics');
+const { find } = require('lyrics');
 
 module.exports = {
   name: 'lyrics',
