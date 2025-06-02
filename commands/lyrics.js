@@ -1,10 +1,10 @@
 const { sendMessage } = require('../handles/sendMessage');
-const { find } = require('lyrics');
+const { find } = require('llyrics');
 
 module.exports = {
   name: 'lyrics',
   description: 'Fetch song lyrics',
-  usage: 'lyrics <song name>',
+  usage: '-lyrics <song name>',
   author: 'GeoDevz69',
 
   async execute(senderId, args, pageAccessToken) {
