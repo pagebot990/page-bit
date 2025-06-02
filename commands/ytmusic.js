@@ -7,7 +7,7 @@ const BASE_URL = 'https://snap-video3.p.rapidapi.com/download';
 module.exports = {
     name: 'ytmusic',
     description: 'Searches for songs on YouTube and provides audio links.',
-    usage: 'ytmusic <song name>',
+    usage: '-ytmusic <song name>',
     author: 'GeoDevz69',
 
     async execute(senderId, args, pageAccessToken) {
