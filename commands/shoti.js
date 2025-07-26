@@ -4,8 +4,8 @@ const fs = require('fs');
 
 const token = fs.readFileSync('token.txt', 'utf8');
 
-const API_BASE = 'https://kaiz-apis.gleeze.com/api';
-const API_KEY = '72f8161d-50d4-4177-a3b4-bd6891de70ef';
+const API_BASE = 'https://kaiz-apis.gleeze.com/api/shoti?';
+const API_KEY = '8c0a049d-29a8-474a-b15e-189e42e150fb';
 
 module.exports = {
   name: 'shoti',
