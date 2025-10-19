@@ -3,7 +3,7 @@ const { sendMessage } = require('../handles/sendMessage');
 
 module.exports = {
     name: 'gpt4',
-    description: 'Interact with DeepAI text generator',
+    description: 'Interact with a free AI API (Gemini proxy)',
     usage: 'gpt4 [your message]',
     author: 'Raniel',
 
@@ -13,23 +13,16 @@ module.exports = {
             return sendMessage(senderId, { text: "Usage: gpt4 <question>" }, pageAccessToken);
 
         try {
-            const response = await axios.post(
-                'https://api.deepai.org/api/text-generator',
-                { text: prompt },
-                {
-                    headers: {
-                        'Api-Key': 'a2f66585-7cde-482a-b537-2180457d83cc',
-                    },
-                }
-            );
+            // ✅ Free API — no key required
+            const { data } = await axios.get(`https://api.azzam.wtf/api/gemini?text=${encodeURIComponent(prompt)}`);
+            const response = data.response || "No response received.";
 
-            const answer = response.data.output || "No response from AI.";
             const parts = [];
-
-            for (let i = 0; i < answer.length; i += 1999) {
-                parts.push(answer.substring(i, i + 1999));
+            for (let i = 0; i < response.length; i += 1999) {
+                parts.push(response.substring(i, i + 1999));
             }
 
+            // Send each chunk of the response
             for (const part of parts) {
                 await sendMessage(senderId, { text: part }, pageAccessToken);
             }
