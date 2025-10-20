@@ -15,7 +15,7 @@ module.exports = {
         try {
             // ✅ Make request (stream-safe)
             const { data } = await axios.get(
-                `https://betadash-api-swordslush-production.up.railway.app/gpt4?ask=${encodeURIComponent(prompt)}`,
+                `https://betadash-api-swordslush-production.up.railway.app/Llama70b?ask=${encodeURIComponent(prompt)}`,
                 { responseType: 'text' } // important: get raw text
             );
 
