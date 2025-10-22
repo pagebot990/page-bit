@@ -3,7 +3,7 @@ const { sendMessage } = require('../handles/sendMessage');
 
 module.exports = {
     name: 'gpt4',
-    description: 'Interact with GPT-4o (BetaDash API, streaming-safe)',
+    description: 'Interact with GPT-4o (Hiroshi API - clean response)',
     usage: 'gpt4 [your message]',
     author: 'Raniel',
 
@@ -13,35 +13,27 @@ module.exports = {
             return sendMessage(senderId, { text: "Usage: gpt4 <question>" }, pageAccessToken);
 
         try {
-            // ✅ Make request (stream-safe)
+            // ✅ Call the API
             const { data } = await axios.get(
-                `https://hiroshi-api.onrender.com/ai/gpt3?ask=${encodeURIComponent(prompt)}`,
-                { responseType: 'text' } // important: get raw text
+                `https://hiroshi-api.onrender.com/ai/gpt3?ask=${encodeURIComponent(prompt)}`
             );
 
-            // ✅ Extract all "content" parts
-            const contentMatches = data.match(/"content":"(.*?)"/g);
-            let finalResponse = "";
+            // ✅ Extract response text safely
+            let finalResponse = data?.response || "No response received.";
 
-            if (contentMatches) {
-                finalResponse = contentMatches
-                    .map(m => m.replace(/"content":"|"/g, '').replace(/\\n/g, '\n'))
-                    .join(' ');
-            } else {
-                // fallback if API changes format
-                finalResponse = data;
-            }
+            // ✅ Clean Markdown and formatting
+            finalResponse = finalResponse
+                .replace(/[#*_`>~-]/g, '') // remove markdown symbols
+                .replace(/\n{2,}/g, '\n')  // fix double newlines
+                .trim();
 
-            // ✅ If still empty
-            if (!finalResponse.trim()) finalResponse = "No response from GPT-4 API.";
-
-            // ✅ Split long messages
+            // ✅ Split if too long for Messenger
             const parts = [];
             for (let i = 0; i < finalResponse.length; i += 1999) {
                 parts.push(finalResponse.substring(i, i + 1999));
             }
 
-            // ✅ Send each part
+            // ✅ Send all message parts
             for (const part of parts) {
                 await sendMessage(senderId, { text: part }, pageAccessToken);
             }
