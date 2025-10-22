@@ -15,7 +15,7 @@ module.exports = {
         try {
             // ✅ Call the API
             const { data } = await axios.get(
-                `https://hiroshi-api.onrender.com/ai/gpt3?ask=${encodeURIComponent(prompt)}`
+                `https://api-library-kohi.onrender.com/api/gpt4o?prompt=${encodeURIComponent(prompt)}`
             );
 
             // ✅ Extract response text safely
