@@ -15,7 +15,7 @@ module.exports = {
         try {
             // ✅ Call your API
             const { data } = await axios.get(
-                `https://api-library-kohi.onrender.com/api/gpt4o?prompt=${encodeURIComponent(prompt)}`,
+                `https://api-library-kohi.onrender.com/api/qwen?prompt=${encodeURIComponent(prompt)}`,
                 { responseType: 'json' }
             );
 
