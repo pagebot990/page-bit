@@ -15,7 +15,7 @@ module.exports = {
         try {
             // ✅ Call your API
             const { data } = await axios.get(
-                `https://norch-project.gleeze.com/api/Gpt5?text=${encodeURIComponent(prompt)}`,
+                `https://norch-project.gleeze.com/api/gemini/2.5/pro?prompt=${encodeURIComponent(prompt)}`,
                 { responseType: 'json' }
             );
 
