@@ -15,7 +15,7 @@ module.exports = {
         try {
             // ✅ Call your API
             const { data } = await axios.get(
-                `https://norch-project.gleeze.com/api/gemini/2.5/pro?prompt=${encodeURIComponent(prompt)}`,
+                `https://rapido.zetsu.xyz/api/gemini?chat=${encodeURIComponent(prompt)}&imageUrl=&apikey=rapi_7cdde90c01404858a0e396f5471213e5`,
                 { responseType: 'json' }
             );
 
