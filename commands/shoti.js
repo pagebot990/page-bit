@@ -5,9 +5,10 @@ const fs = require('fs');
 const token = fs.readFileSync('token.txt', 'utf8');
 
 const API_BASE = 'https://norch-project.gleeze.com/api/spotify';
+
 module.exports = {
   name: 'spotify',
-  description: 'Fetch Spotify track.',
+  description: 'Fetch a Spotify track.',
   usage: 'spotify <song name>',
   author: 'Ry',
 
@@ -19,25 +20,27 @@ module.exports = {
         params: { q: query }
       });
 
-      if (data.status === 'success' && data.data) {
-        const { preview_url, title, artist } = data.data;
+      if (data.status === true && data.result) {
+        const { title, artist, url, thumbnail } = data.result;
 
         const audioMessage = {
           attachment: {
             type: 'audio',
             payload: {
-              url: preview_url
+              url: url
             }
-          },
-          text: `🎵 *${title}* - ${artist}`
+          }
         };
 
+        await sendMessage(senderId, { text: `🎵 ${title} - ${artist}` }, pageAccessToken);
         await sendMessage(senderId, audioMessage, pageAccessToken);
+
       } else {
         sendError(senderId, '❌ Error: Unable to fetch Spotify track.', pageAccessToken);
       }
+
     } catch (error) {
-      console.error('Error fetching Spotify track:', error.message);
+      console.error('Error fetching Spotify:', error.message);
       sendError(senderId, '❌ Error: Unexpected error occurred.', pageAccessToken);
     }
   },
