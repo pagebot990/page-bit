@@ -1,51 +1,32 @@
-const axios = require('axios');
-const { sendMessage } = require('../handles/sendMessage');
+function addMessage(message, isUser = false) {
+    const messageElement = document.createElement('div');
+    messageElement.className = isUser ? 'user-message message' : 'bot-message message';
+    messageElement.textContent = message;
+    chatbox.appendChild(messageElement);
+    chatbox.scrollTop = chatbox.scrollHeight;
+}
 
-module.exports = {
-    name: 'gpt4',
-    description: 'Interact with GPT-4o (via api-library-kohi)',
-    usage: 'gpt4 [your message]',
-    author: 'Raniel',
-
-    async execute(senderId, args, pageAccessToken) {
-        const prompt = args.join(' ');
-        if (!prompt)
-            return sendMessage(senderId, { text: "Usage: gpt4 <question>" }, pageAccessToken);
-
-        try {
-            // ✅ Call your API
-            const { data } = await axios.get(
-                `https://rapido.zetsu.xyz/api/gemini?chat=${encodeURIComponent(prompt)}&imageUrl=&apikey=rapi_7cdde90c01404858a0e396f5471213e5`,
-                { responseType: 'json' }
-            );
-
-            // ✅ Extract message properly
-            let finalResponse = "";
-            if (data && data.data) {
-                finalResponse = data.data;
-            } else {
-                finalResponse = "No response from GPT-4 API.";
-            }
-
-            // ✅ Split long messages if needed
-            const parts = [];
-            for (let i = 0; i < finalResponse.length; i += 1999) {
-                parts.push(finalResponse.substring(i, i + 1999));
-            }
-
-            // ✅ Send each part
-            for (const part of parts) {
-                await sendMessage(senderId, { text: part }, pageAccessToken);
-            }
-
-        } catch (error) {
-            console.error("❌ GPT-4 command error:", error.message);
-            if (error.response) console.error("API response:", error.response.data);
-            sendMessage(
-                senderId,
-                { text: 'There was an error processing your request.' },
-                pageAccessToken
-            );
-        }
+async function fetchAnswerFromAPI(question) {
+    try {
+        const apiUrl = `https://rapido.zetsu.xyz/api/gemini?chat=${encodeURIComponent(question)}&imageUrl=1&apikey=rapi_7cdde90c01404858a0e396f5471213e5`;
+        
+        const response = await fetch(apiUrl);
+        const data = await response.json();
+        
+        // Assuming ang sagot ay nasa "response" field (ayon sa karamihang AI API)
+        const answer = data.response || data.answer || "No response received.";
+        addMessage(answer);
+    } catch (error) {
+        console.error(error);
+        addMessage("Oops! An error occurred while fetching the answer.");
     }
-};
+}
+
+function sendMessage() {
+    const userMessage = inputBox.value;
+    if (userMessage.trim() !== '') {
+        addMessage(userMessage, true);
+        fetchAnswerFromAPI(userMessage);
+    }
+    inputBox.value = '';
+}
