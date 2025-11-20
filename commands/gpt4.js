@@ -15,7 +15,7 @@ module.exports = {
         try {
             // ✅ Call your API
             const { data } = await axios.get(
-                `https://apis-rho-nine.vercel.app/gemini?ask=&imagurl=${encodeURIComponent(prompt)}`,
+                `https://norch-project.gleeze.com/api/Gpt5?text=${encodeURIComponent(prompt)}`,
                 { responseType: 'json' }
             );
 
