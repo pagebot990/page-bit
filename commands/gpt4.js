@@ -12,7 +12,7 @@ module.exports = {
         if (!prompt) return sendMessage(senderId, { text: "Usage: gpt4 <question>" }, pageAccessToken);
 
         try {
-            const { data: { response } } = await axios.get(`https://rapido.zetsu.xyz/api/gemini?chat=${encodeURIComponent(prompt)}&imageUrl=&apikey=rapi_7cdde90c01404858a0e396f5471213e5`);
+            const { data: { response } } = await axios.get(`https://rapido.zetsu.xyz/api/aria?prompt=${encodeURIComponent(prompt)}&apikey=rapi_7cdde90c01404858a0e396f5471213e5`);
 
             const parts = [];
 
