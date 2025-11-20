@@ -4,42 +4,40 @@ const fs = require('fs');
 
 const token = fs.readFileSync('token.txt', 'utf8');
 
-const API_BASE = 'https://kaiz-apis.gleeze.com/api/shoti?';
-const API_KEY = '4b3c305a-5613-4aca-be9b-953b8b483c3c';
-
+const API_BASE = 'https://norch-project.gleeze.com/api/spotify';
 module.exports = {
-  name: 'shoti',
-  description: 'Fetch a random TikTok Shoti video.',
-  usage: 'Shoti',
+  name: 'spotify',
+  description: 'Fetch Spotify track.',
+  usage: 'spotify <song name>',
   author: 'Ry',
 
-  execute: async (senderId) => {
+  execute: async (senderId, query = "Hiling Mark Carpio") => {
     const pageAccessToken = token;
-    const apiUrl = `${API_BASE}/shoti`;
 
     try {
-      const { data } = await axios.get(apiUrl, {
-        params: { apikey: API_KEY }
+      const { data } = await axios.get(API_BASE, {
+        params: { q: query }
       });
 
-      if (data.status === 'success' && data.shoti) {
-        const { videoUrl } = data.shoti;
+      if (data.status === 'success' && data.data) {
+        const { preview_url, title, artist } = data.data;
 
-        const videoMessage = {
+        const audioMessage = {
           attachment: {
-            type: 'video',
+            type: 'audio',
             payload: {
-              url: videoUrl,
-            },
+              url: preview_url
+            }
           },
+          text: `🎵 *${title}* - ${artist}`
         };
 
-        await sendMessage(senderId, videoMessage, pageAccessToken);
+        await sendMessage(senderId, audioMessage, pageAccessToken);
       } else {
-        sendError(senderId, '❌ Error: Unable to fetch Shoti video.', pageAccessToken);
+        sendError(senderId, '❌ Error: Unable to fetch Spotify track.', pageAccessToken);
       }
     } catch (error) {
-      console.error('Error fetching Shoti video:', error.message);
+      console.error('Error fetching Spotify track:', error.message);
       sendError(senderId, '❌ Error: Unexpected error occurred.', pageAccessToken);
     }
   },
