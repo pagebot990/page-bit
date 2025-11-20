@@ -15,7 +15,7 @@ module.exports = {
         try {
             // ✅ Call your API
             const { data } = await axios.get(
-                `https://api-library-kohi.onrender.com/api/amd-gpt?prompt=${encodeURIComponent(prompt)}`,
+                `https://apis-rho-nine.vercel.app/gemini?ask=&imagurl=${encodeURIComponent(prompt)}`,
                 { responseType: 'json' }
             );
 
