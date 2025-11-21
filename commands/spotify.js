@@ -25,30 +25,41 @@ module.exports = {
                 return sendMessage(senderId, { text: "No results found." }, pageAccessToken);
             }
 
-            // DOWNLOAD THE AUDIO FILE
+            // DOWNLOAD AUDIO FILE
             const audioBuffer = await axios.get(result.audioUrl, {
                 responseType: "arraybuffer"
             });
 
-            // UPLOAD THE AUDIO AS ATTACHMENT
+            // STEP 1 — UPLOAD AUDIO TO FACEBOOK
             const form = new FormData();
-            form.append("message", JSON.stringify({
-                recipient: { id: senderId },
-                message: { attachment: { type: "audio", payload: {} } }
-            }));
             form.append("filedata", Buffer.from(audioBuffer.data), {
-                filename: "audio.mp3",
+                filename: "song.mp3",
                 contentType: "audio/mpeg"
             });
 
-            // SEND AUDIO
-            await axios.post(
-                `https://graph.facebook.com/v17.0/me/messages?access_token=${pageAccessToken}`,
+            const uploadRes = await axios.post(
+                `https://graph.facebook.com/v17.0/me/message_attachments?access_token=${pageAccessToken}`,
                 form,
                 { headers: form.getHeaders() }
             );
 
-            // SEND SONG INFO TEXT
+            const attachmentId = uploadRes.data.attachment_id;
+
+            // STEP 2 — SEND MESSAGE USING attachment_id
+            await sendMessage(
+                senderId,
+                {
+                    attachment: {
+                        type: "audio",
+                        payload: {
+                            attachment_id: attachmentId
+                        }
+                    }
+                },
+                pageAccessToken
+            );
+
+            // OPTIONAL: SEND SONG DETAILS
             const info = 
 `🎵 *Spotify Result*
 
