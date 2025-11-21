@@ -19,19 +19,20 @@ module.exports = {
                 `https://api-library-kohi.onrender.com/api/gemini?prompt=${encodeURIComponent(prompt)}`
             );
 
-            // Ensure response exists
-            const output = res.data?.response;
+            // The actual response is inside res.data.data
+            const output = res.data?.data;
+
             if (!output) {
                 return sendMessage(senderId, { text: "API returned no response." }, pageAccessToken);
             }
 
-            // SPLIT INTO 1999 characters for Messenger limit
+            // SPLIT MESSAGE INTO 1999 CHUNKS
             const parts = [];
             for (let i = 0; i < output.length; i += 1999) {
                 parts.push(output.substring(i, i + 1999));
             }
 
-            // Send each part
+            // SEND EACH PART
             for (const part of parts) {
                 await sendMessage(senderId, { text: part }, pageAccessToken);
             }
