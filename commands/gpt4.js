@@ -9,24 +9,40 @@ module.exports = {
 
     async execute(senderId, args, pageAccessToken) {
         const prompt = args.join(' ');
-        if (!prompt) return sendMessage(senderId, { text: "Usage: gpt4 <question>" }, pageAccessToken);
+        if (!prompt) {
+            return sendMessage(senderId, { text: "Usage: gpt4 <question>" }, pageAccessToken);
+        }
 
         try {
-            const { data: { response } } = await axios.get(`https://api-library-kohi.onrender.com/api/gemini?prompt=${encodeURIComponent(prompt)}`);
+            // CALL YOUR API
+            const res = await axios.get(
+                `https://api-library-kohi.onrender.com/api/gemini?prompt=${encodeURIComponent(prompt)}`
+            );
 
-            const parts = [];
-
-            for (let i = 0; i < response.length; i += 1999) {
-                parts.push(response.substring(i, i + 1999));
+            // Ensure response exists
+            const output = res.data?.response;
+            if (!output) {
+                return sendMessage(senderId, { text: "API returned no response." }, pageAccessToken);
             }
 
-            // send all msg parts
+            // SPLIT INTO 1999 characters for Messenger limit
+            const parts = [];
+            for (let i = 0; i < output.length; i += 1999) {
+                parts.push(output.substring(i, i + 1999));
+            }
+
+            // Send each part
             for (const part of parts) {
                 await sendMessage(senderId, { text: part }, pageAccessToken);
             }
 
-        } catch {
-            sendMessage(senderId, { text: 'There was an error generating the content. Please try again later.' }, pageAccessToken);
+        } catch (err) {
+            console.error("GPT ERROR:", err?.response?.data || err.message);
+            sendMessage(
+                senderId,
+                { text: 'There was an error generating the content. Please try again later.' },
+                pageAccessToken
+            );
         }
     }
 };
