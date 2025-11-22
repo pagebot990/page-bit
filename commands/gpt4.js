@@ -16,7 +16,7 @@ module.exports = {
         try {
             // CALL YOUR API
             const res = await axios.get(
-                `https://api-library-kohi.onrender.com/api/gemini?prompt=${encodeURIComponent(prompt)}`
+                `https://api-library-kohi.onrender.com/api/qwen?prompt=${encodeURIComponent(prompt)}`
             );
 
             // The actual response is inside res.data.data
