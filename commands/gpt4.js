@@ -3,7 +3,7 @@ const { sendMessage } = require('../handles/sendMessage');
 
 module.exports = {
     name: 'gpt4',
-    description: 'Interact with GPT-4o',
+    description: 'Interact with GPT API',
     usage: 'gpt4 [your message]',
     author: 'Raniel',
 
@@ -14,25 +14,20 @@ module.exports = {
         }
 
         try {
-            // CALL YOUR API
             const res = await axios.get(
-                `https://api-library-kohi.onrender.com/api/qwen?prompt=${encodeURIComponent(prompt)}`
+                `https://chatgpt-api.shuttle.dev/?q=${encodeURIComponent(prompt)}`
             );
 
-            // The actual response is inside res.data.data
-            const output = res.data?.data;
-
+            const output = res.data?.message;
             if (!output) {
                 return sendMessage(senderId, { text: "API returned no response." }, pageAccessToken);
             }
 
-            // SPLIT MESSAGE INTO 1999 CHUNKS
             const parts = [];
             for (let i = 0; i < output.length; i += 1999) {
                 parts.push(output.substring(i, i + 1999));
             }
 
-            // SEND EACH PART
             for (const part of parts) {
                 await sendMessage(senderId, { text: part }, pageAccessToken);
             }
