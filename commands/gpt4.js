@@ -3,42 +3,30 @@ const { sendMessage } = require('../handles/sendMessage');
 
 module.exports = {
     name: 'gpt4',
-    description: 'Interact with GPT API',
+    description: 'Interact with GPT-4o',
     usage: 'gpt4 [your message]',
     author: 'Raniel',
 
     async execute(senderId, args, pageAccessToken) {
         const prompt = args.join(' ');
-        if (!prompt) {
-            return sendMessage(senderId, { text: "Usage: gpt4 <question>" }, pageAccessToken);
-        }
+        if (!prompt) return sendMessage(senderId, { text: "Usage: gpt4 <question>" }, pageAccessToken);
 
         try {
-            const res = await axios.get(
-                `https://chatgpt-api.shuttle.dev/?q=${encodeURIComponent(prompt)}`
-            );
-
-            const output = res.data?.message;
-            if (!output) {
-                return sendMessage(senderId, { text: "API returned no response." }, pageAccessToken);
-            }
+            const { data: { response } } = await axios.get(`https://kryptonite-api-library.onrender.com/api/gpt4-convo?prompt=${encodeURIComponent(prompt)}&uid=${senderId}`);
 
             const parts = [];
-            for (let i = 0; i < output.length; i += 1999) {
-                parts.push(output.substring(i, i + 1999));
+
+            for (let i = 0; i < response.length; i += 1999) {
+                parts.push(response.substring(i, i + 1999));
             }
 
+            // send all msg parts
             for (const part of parts) {
                 await sendMessage(senderId, { text: part }, pageAccessToken);
             }
 
-        } catch (err) {
-            console.error("GPT ERROR:", err?.response?.data || err.message);
-            sendMessage(
-                senderId,
-                { text: 'There was an error generating the content. Please try again later.' },
-                pageAccessToken
-            );
+        } catch {
+            sendMessage(senderId, { text: 'There was an error generating the content. Please try again later.' }, pageAccessToken);
         }
     }
 };
