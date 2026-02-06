@@ -12,7 +12,7 @@ module.exports = {
         if (!prompt) return sendMessage(senderId, { text: "Usage: gpt4 <question>" }, pageAccessToken);
 
         try {
-            const { data: { response } } = await axios.get(`https://kryptonite-api-library.onrender.com/api/gpt4-convo?prompt=${encodeURIComponent(prompt)}&uid=${senderId}`);
+            const { data: { response } } = await axios.get(`https://api-library-kohi.onrender.com/api/chatgpt?promt=${encodeURIComponent(prompt)}&uid=${senderId}`);
 
             const parts = [];
 
