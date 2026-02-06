@@ -10,11 +10,7 @@ module.exports = {
     async execute(senderId, args, pageAccessToken) {
         const prompt = args.join(' ');
         if (!prompt) {
-            return sendMessage(
-                senderId,
-                { text: 'Usage: gpt4 <question>' },
-                pageAccessToken
-            );
+            return sendMessage(senderId, { text: 'Usage: gpt4 <question>' }, pageAccessToken);
         }
 
         try {
@@ -22,30 +18,33 @@ module.exports = {
                 'https://api-library-kohi.onrender.com/api/chatgpt',
                 {
                     params: {
-                        prompt: prompt, // FIXED (from promt ➜ prompt)
+                        prompt: prompt, // sigurado ka na ito ang param
                         uid: senderId
                     }
                 }
             );
 
-            const response = res.data?.response;
+            const response = res.data?.data; // ✅ FIXED
 
             if (!response) {
                 return sendMessage(
                     senderId,
-                    { text: 'No response received from API.' },
+                    { text: 'API returned no message.' },
                     pageAccessToken
                 );
             }
 
-            // split message (Messenger limit)
+            // Messenger text limit
             for (let i = 0; i < response.length; i += 1999) {
-                const part = response.substring(i, i + 1999);
-                await sendMessage(senderId, { text: part }, pageAccessToken);
+                await sendMessage(
+                    senderId,
+                    { text: response.substring(i, i + 1999) },
+                    pageAccessToken
+                );
             }
 
         } catch (err) {
-            console.error('GPT API Error:', err.message);
+            console.error('GPT API Error:', err);
             await sendMessage(
                 senderId,
                 { text: 'There was an error generating the content. Please try again later.' },
