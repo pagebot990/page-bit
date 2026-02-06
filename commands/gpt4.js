@@ -9,24 +9,48 @@ module.exports = {
 
     async execute(senderId, args, pageAccessToken) {
         const prompt = args.join(' ');
-        if (!prompt) return sendMessage(senderId, { text: "Usage: gpt4 <question>" }, pageAccessToken);
+        if (!prompt) {
+            return sendMessage(
+                senderId,
+                { text: 'Usage: gpt4 <question>' },
+                pageAccessToken
+            );
+        }
 
         try {
-            const { data: { response } } = await axios.get(`https://api-library-kohi.onrender.com/api/chatgpt?promt=${encodeURIComponent(prompt)}&uid=${senderId}`);
+            const res = await axios.get(
+                'https://api-library-kohi.onrender.com/api/chatgpt',
+                {
+                    params: {
+                        prompt: prompt, // FIXED (from promt ➜ prompt)
+                        uid: senderId
+                    }
+                }
+            );
 
-            const parts = [];
+            const response = res.data?.response;
 
-            for (let i = 0; i < response.length; i += 1999) {
-                parts.push(response.substring(i, i + 1999));
+            if (!response) {
+                return sendMessage(
+                    senderId,
+                    { text: 'No response received from API.' },
+                    pageAccessToken
+                );
             }
 
-            // send all msg parts
-            for (const part of parts) {
+            // split message (Messenger limit)
+            for (let i = 0; i < response.length; i += 1999) {
+                const part = response.substring(i, i + 1999);
                 await sendMessage(senderId, { text: part }, pageAccessToken);
             }
 
-        } catch {
-            sendMessage(senderId, { text: 'There was an error generating the content. Please try again later.' }, pageAccessToken);
+        } catch (err) {
+            console.error('GPT API Error:', err.message);
+            await sendMessage(
+                senderId,
+                { text: 'There was an error generating the content. Please try again later.' },
+                pageAccessToken
+            );
         }
     }
 };
