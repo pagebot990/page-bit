@@ -1,10 +1,7 @@
 const axios = require('axios');
 const { sendMessage } = require('../handles/sendMessage');
-const OpenAI = require('openai');
 
-const openai = new OpenAI({
-    apiKey: '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'
-});
+const OPENAI_API_KEY = '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';
 
 module.exports = {
     name: 'gpt4',
@@ -19,15 +16,24 @@ module.exports = {
         }
 
         try {
-            const completion = await openai.chat.completions.create({
-                model: 'gpt-3.5-turbo', // pwede mo ring gamitin ang gpt-4 kung gusto mo
-                messages: [
-                    { role: 'user', content: prompt }
-                ],
-                max_tokens: 1000
-            });
+            const res = await axios.post(
+                'https://api.openai.com/v1/chat/completions',
+                {
+                    model: 'gpt-3.5-turbo',
+                    messages: [
+                        { role: 'user', content: prompt }
+                    ],
+                    max_tokens: 1000
+                },
+                {
+                    headers: {
+                        'Authorization': `Bearer ${OPENAI_API_KEY}`,
+                        'Content-Type': 'application/json'
+                    }
+                }
+            );
 
-            const response = completion.choices[0]?.message?.content;
+            const response = res.data?.choices[0]?.message?.content;
 
             if (!response) {
                 return sendMessage(senderId, { text: 'No response from AI.' }, pageAccessToken);
@@ -43,10 +49,10 @@ module.exports = {
             }
 
         } catch (err) {
-            console.error('OpenAI API Error:', err);
+            console.error('OpenAI API Error:', err.response?.data || err.message);
             await sendMessage(
                 senderId,
-                { text: 'Error: ' + err.message },
+                { text: 'Error: ' + (err.response?.data?.error?.message || err.message) },
                 pageAccessToken
             );
         }
