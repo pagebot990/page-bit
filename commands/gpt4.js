@@ -3,7 +3,7 @@ const { sendMessage } = require('../handles/sendMessage');
 const OpenAI = require('openai');
 
 const openai = new OpenAI({
-    apiKey: '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'
+    apiKey: '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'
 });
 
 module.exports = {
