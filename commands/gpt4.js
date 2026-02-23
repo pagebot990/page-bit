@@ -3,7 +3,7 @@ const { sendMessage } = require('../handles/sendMessage');
 
 module.exports = {
     name: 'gpt4',
-    description: 'Interact with GPT-4o',
+    description: 'Interact with AI',
     usage: 'gpt4 [your message]',
     author: 'Raniel',
 
@@ -13,36 +13,23 @@ module.exports = {
             return sendMessage(senderId, { text: 'Usage: gpt4 <question>' }, pageAccessToken);
         }
 
-        const apiKey = process.env.OPENAI_API_KEY;
-        
-        if (!apiKey) {
-            return sendMessage(senderId, { text: 'API key not configured.' }, pageAccessToken);
-        }
-
         try {
-            const res = await axios.post(
-                'https://api.openai.com/v1/chat/completions',
+            const res = await axios.get(
+                'https://hiroshi-api.onrender.com/ai/gpt3',
                 {
-                    model: 'gpt-3.5-turbo',
-                    messages: [
-                        { role: 'user', content: prompt }
-                    ],
-                    max_tokens: 1000
-                },
-                {
-                    headers: {
-                        'Authorization': `Bearer ${apiKey}`,
-                        'Content-Type': 'application/json'
+                    params: {
+                        ask: prompt
                     }
                 }
             );
 
-            const response = res.data?.choices[0]?.message?.content;
+            const response = res.data?.response;
 
             if (!response) {
                 return sendMessage(senderId, { text: 'No response from AI.' }, pageAccessToken);
             }
 
+            // Messenger text limit
             for (let i = 0; i < response.length; i += 1999) {
                 await sendMessage(
                     senderId,
@@ -52,10 +39,10 @@ module.exports = {
             }
 
         } catch (err) {
-            console.error('OpenAI API Error:', err.response?.data || err.message);
+            console.error('AI API Error:', err.message);
             await sendMessage(
                 senderId,
-                { text: 'Error: ' + (err.response?.data?.error?.message || err.message) },
+                { text: 'Error: ' + err.message },
                 pageAccessToken
             );
         }
