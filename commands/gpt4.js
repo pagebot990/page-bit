@@ -1,8 +1,6 @@
 const axios = require('axios');
 const { sendMessage } = require('../handles/sendMessage');
 
-const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
-
 module.exports = {
     name: 'gpt4',
     description: 'Interact with GPT-4o',
@@ -13,6 +11,12 @@ module.exports = {
         const prompt = args.join(' ');
         if (!prompt) {
             return sendMessage(senderId, { text: 'Usage: gpt4 <question>' }, pageAccessToken);
+        }
+
+        const apiKey = process.env.OPENAI_API_KEY;
+        
+        if (!apiKey) {
+            return sendMessage(senderId, { text: 'API key not configured.' }, pageAccessToken);
         }
 
         try {
@@ -27,7 +31,7 @@ module.exports = {
                 },
                 {
                     headers: {
-                        'Authorization': `Bearer ${OPENAI_API_KEY}`,
+                        'Authorization': `Bearer ${apiKey}`,
                         'Content-Type': 'application/json'
                     }
                 }
