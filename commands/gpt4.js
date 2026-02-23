@@ -1,7 +1,7 @@
 const axios = require('axios');
 const { sendMessage } = require('../handles/sendMessage');
 
-const OPENAI_API_KEY = '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';
+const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
 
 module.exports = {
     name: 'gpt4',
@@ -39,7 +39,6 @@ module.exports = {
                 return sendMessage(senderId, { text: 'No response from AI.' }, pageAccessToken);
             }
 
-            // Messenger text limit
             for (let i = 0; i < response.length; i += 1999) {
                 await sendMessage(
                     senderId,
