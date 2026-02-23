@@ -19,7 +19,8 @@
     "node-fetch": "^3.3.2",
     "request": "^2.88.2",
     "winston": "^3.13.0",
-    "fluent-ffmpeg": "^2.1.2"
+    "fluent-ffmpeg": "^2.1.2",
+    "openai": "^4.0.0"
   },
   "engines": {
     "node": "20.x"
