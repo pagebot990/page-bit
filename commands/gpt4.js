@@ -19,32 +19,36 @@ module.exports = {
         }
 
         try {
-            const res = await axios.get(
-                'https://gpt4-ubt7.onrender.com/gpt4-convo',
+            // Updated Endpoint URL
+            const endpointUrl = 'https://www.smfahim.xyz/ai/cloud-ai'; 
+
+            // The new API expects a POST request with a JSON body
+            const res = await axios.post(
+                endpointUrl,
                 {
-                    params: {
-                        prompt: prompt,
-                        uid: senderId   // para unique per user
-                    }
+                    prompt: prompt
+                    // Based on the image, uid is not required for this API,
+                    // but if it becomes necessary, you might add it here.
+                    // uid: senderId 
                 }
             );
 
-            const status = res.data?.status;
-            const response = res.data?.response;
+            // The image shows the response has a "result" key, not "response" or "status"
+            const apiResult = res.data?.result;
 
-            if (!status || !response) {
+            if (!apiResult) {
                 return sendMessage(
                     senderId,
-                    { text: 'No response received from API.' },
+                    { text: 'No result received from API.' },
                     pageAccessToken
                 );
             }
 
             // Messenger text limit (1999 characters)
-            for (let i = 0; i < response.length; i += 1999) {
+            for (let i = 0; i < apiResult.length; i += 1999) {
                 await sendMessage(
                     senderId,
-                    { text: response.substring(i, i + 1999) },
+                    { text: apiResult.substring(i, i + 1999) },
                     pageAccessToken
                 );
             }
@@ -54,7 +58,7 @@ module.exports = {
 
             await sendMessage(
                 senderId,
-                { text: 'Error: ' + err.message },
+                { text: 'Error: ' + err.message + '. Please try again later.' },
                 pageAccessToken
             );
         }
